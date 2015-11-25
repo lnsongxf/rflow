@@ -2,12 +2,12 @@ require(rPython)
 
 data(iris)
 
-# hidden_units <- c(10, 20, 10)
-# n_classes <- 3
-# steps <- 200
+hidden_units <- c(10, 20, 10)
+n_classes <- 3
+steps <- 200
 
 importDeps <- function(){
-"
+cat("
 import pandas as pd
 import os
 import random
@@ -15,28 +15,25 @@ from sklearn import metrics
 import skflow
 import numpy as np
 import sys
-"
+")
 }
 
 createArgs <- function(names){
-  paste(unlist(lapply(names, function(name){
-    if(is.character(get(name))){
-      RHS <- gsub("\\\"", "", capture.output(dput(get(name)))) # TODO: fix dtype bug
-    } else {
-      RHS <- capture.output(dput(get(name)))
-    }
+  if(length(names) == 0) return(NULL)
+  if(is.list(names)){names <- names(names)} # deal with additional arguments
+  cat(paste(unlist(lapply(names, function(name){
+    RHS <- capture.output(dput(get(name)))
     paste0(name, "=", RHS)
-  })), collapse = ", ")
+  })), collapse = ", "))
 }
 
-skflow.TensorFlowDNNClassifier <- function(hidden_units, n_classes, tf_master="",
-                                           batch_size=32, steps=50, optimizer="SGD",
-                                           learning_rate=0.1, tf_random_seed=42){
-  paste0("classifier = skflow.TensorFlowDNNClassifier(",
-         createArgs(c("hidden_units", "n_classes", "tf_master", 
-                      "batch_size", "steps", "optimizer",
-                      "learning_rate", "tf_random_seed")),
-         ")")
+# TODO: pasted string order is incorrect
+skflow.TensorFlowDNNClassifier <- function(hidden_units, n_classes, ...){
+  theDots <- list(...)
+  cat(paste0("classifier = skflow.TensorFlowDNNClassifier(",
+         createArgs(c("hidden_units", "n_classes")), ", ",
+         createArgs(theDots),
+         ")"))
 }
 
 classifier.predict <- function(X){
@@ -79,10 +76,14 @@ prepareTargetVar <- function(target, dtype = 'int64'){
 
 preparePredictors(iris[1:4])
 
-prepareTargetVar(iris[,5])
+cat(prepareTargetVar(iris[,5]))
 
 system(paste0("python TensorFlowDNNClassifier.py ",
               paste0('"', X_lists, '"'),
               " ", 
               paste0('"', y_lists, '"')))
 
+sink("test.py")
+importDeps()
+skflow.TensorFlowDNNClassifier(hidden_units = hidden_units, n_classes = n_classes)
+sink()
