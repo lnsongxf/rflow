@@ -1,12 +1,10 @@
-import random
-
-from sklearn import datasets, metrics
+from sklearn import metrics
 
 import skflow
 
 import numpy as np
 
-import sys, ast, getopt, types
+import sys
 
 def main(argv):
     classifier = skflow.TensorFlowDNNClassifier(hidden_units=[10, 20, 10], n_classes=3, steps=200)

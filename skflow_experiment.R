@@ -2,9 +2,21 @@ require(rPython)
 
 data(iris)
 
-hidden_units <- c(10, 20, 10)
-n_classes <- 3
-steps <- 200
+# hidden_units <- c(10, 20, 10)
+# n_classes <- 3
+# steps <- 200
+
+importDeps <- function(){
+"
+import pandas as pd
+import os
+import random
+from sklearn import metrics
+import skflow
+import numpy as np
+import sys
+"
+}
 
 createArgs <- function(names){
   paste(unlist(lapply(names, function(name){
@@ -22,41 +34,38 @@ skflow.TensorFlowDNNClassifier <- function(hidden_units, n_classes, tf_master=""
          ")")
 }
 
-python.assign("X", iris[1:4])
-python.exec('
-import pandas as pd
-import os
-X_df = pd.DataFrame(X)
-X_lists = X_df.values.tolist()
-f = open("X_lists.txt", "w")
-f.write(json.dumps(X_lists))
-f.close()')
-X_lists <- readLines("X_lists.txt")
-python.exec('os.remove("X_lists.txt")')
+classifier.predict <- function(X){
+  "classifier.predict(X)"
+}
 
-python.assign("y", as.integer(as.factor(iris[,5]))-1) # starts from 0
-python.exec('
-f = open("y_lists.txt", "w")
-f.write(json.dumps(y))
-f.close()')
+preparePredictors <- function(predictors){
+  python.assign("X", predictors)
+  python.exec('
+  X_df = pd.DataFrame(X)
+  X_lists = X_df.values.tolist()
+  f = open("X_lists.txt", "w")
+  f.write(json.dumps(X_lists))
+  f.close()')
+}
+
+prepareTargetVar <- function(target){
+  python.assign("y", as.integer(as.factor(iris[,5]))-1) # starts from 0
+  python.exec('
+  f = open("y_lists.txt", "w")
+  f.write(json.dumps(y))
+  f.close()')
+}
+
+preparePredictors(iris[1:4])
+X_lists <- readLines("X_lists.txt")
+unlink("X_lists.txt")
+
+prepareTargetVar(iris[,5])
 y_lists <- readLines("y_lists.txt")
-python.exec('os.remove("y_lists.txt")')
+unlink("y_lists.txt")
 
 system(paste0("python TensorFlowDNNClassifier.py ",
               paste0('"', X_lists, '"'),
               " ", 
               paste0('"', y_lists, '"')))
-
-# python.exec('import random')
-# python.exec('from sklearn import datasets, metrics')
-# python.exec('import skflow')
-
-# system("python iris_test.py")
-
-# system(paste0("python TensorFlowDNNClassifier.py ", '--l="[1,2,3]" --l="[2,3,4]"'))
-
-
-# python.exec(paste0("type(eval(", paste0('"', y_lists, '"'), "))"))
-
-
 
