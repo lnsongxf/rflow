@@ -21,17 +21,17 @@ import sys
 createArgs <- function(names){
   if(length(names) == 0) return(NULL)
   if(is.list(names)){names <- names(names)} # deal with additional arguments
-  cat(paste(unlist(lapply(names, function(name){
+  paste(unlist(lapply(names, function(name){
     RHS <- capture.output(dput(get(name)))
     paste0(name, "=", RHS)
-  })), collapse = ", "))
+  })), collapse = ", ")
 }
 
-# TODO: pasted string order is incorrect
 skflow.TensorFlowDNNClassifier <- function(hidden_units, n_classes, ...){
   theDots <- list(...)
   cat(paste0("classifier = skflow.TensorFlowDNNClassifier(",
-         createArgs(c("hidden_units", "n_classes")), ", ",
+         createArgs(c("hidden_units", "n_classes")), 
+         ifelse(length(theDots) != 0, ", ", ""),
          createArgs(theDots),
          ")"))
 }
