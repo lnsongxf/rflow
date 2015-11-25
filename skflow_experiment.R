@@ -20,7 +20,12 @@ import sys
 
 createArgs <- function(names){
   paste(unlist(lapply(names, function(name){
-    paste0(name, "=", capture.output(dput(get(name))))
+    if(is.character(get(name))){
+      RHS <- gsub("\\\"", "", capture.output(dput(get(name)))) # TODO: fix dtype bug
+    } else {
+      RHS <- capture.output(dput(get(name)))
+    }
+    paste0(name, "=", RHS)
   })), collapse = ", ")
 }
 
@@ -38,7 +43,7 @@ classifier.predict <- function(X){
   "classifier.predict(X)"
 }
 
-preparePredictors <- function(predictors){
+preparePredictors <- function(predictors, dtype = 'float64'){
   python.assign("X", predictors)
   python.exec('
   X_df = pd.DataFrame(X)
@@ -46,23 +51,35 @@ preparePredictors <- function(predictors){
   f = open("X_lists.txt", "w")
   f.write(json.dumps(X_lists))
   f.close()')
+  X_lists <- readLines("X_lists.txt")
+  
+  paste0("X = np.asarray(",
+         X_lists, ", ",
+         createArgs('dtype'),
+         ")")
+  
+  unlink("X_lists.txt")
 }
 
-prepareTargetVar <- function(target){
+prepareTargetVar <- function(target, dtype = 'int64'){
   python.assign("y", as.integer(as.factor(iris[,5]))-1) # starts from 0
   python.exec('
   f = open("y_lists.txt", "w")
   f.write(json.dumps(y))
   f.close()')
+  y_lists <- readLines("y_lists.txt")
+  
+  paste0("y = np.asarray(",
+         y_lists, ", ",
+         createArgs('dtype'),
+         ")")
+  
+  unlink("y_lists.txt")
 }
 
 preparePredictors(iris[1:4])
-X_lists <- readLines("X_lists.txt")
-unlink("X_lists.txt")
 
 prepareTargetVar(iris[,5])
-y_lists <- readLines("y_lists.txt")
-unlink("y_lists.txt")
 
 system(paste0("python TensorFlowDNNClassifier.py ",
               paste0('"', X_lists, '"'),
