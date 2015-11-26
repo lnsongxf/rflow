@@ -6,6 +6,7 @@ from pandas import DataFrame
 import os
 import random
 from sklearn import metrics
+from sklearn.cross_validation import train_test_split
 import skflow
 from numpy import asarray
 import sys
@@ -29,7 +30,7 @@ createArgs <- function(names){
   })), collapse = ", ")
 }
 
-skflow.TensorFlowDNNClassifier <- function(hidden_units, n_classes, ...){
+TensorFlowDNNClassifier <- function(hidden_units, n_classes, ...){
   theDots <- list(...)
   cat(paste0("classifier = skflow.TensorFlowDNNClassifier(",
          createArgs(c("hidden_units", "n_classes")), 
@@ -38,11 +39,18 @@ skflow.TensorFlowDNNClassifier <- function(hidden_units, n_classes, ...){
          ")\n"))
 }
 
-classifier.predict <- function(){
-  cat("classifier.predict(X)\n")
+predict <- function(){
+  cat("predictions = classifier.predict(X_test)\n")
 }
-classifier.fit <- function(){
-  cat("classifier.fit(X, y)\n")
+fit <- function(){
+  cat("classifier.fit(X_train, y_train)\n")
+}
+
+accuracyScore <- function(){
+  cat('
+score = metrics.accuracy_score(predictions, y_test)
+print("Accuracy: %f" % score)
+      ')
 }
 
 preparePredictors <- function(predictors){
@@ -86,9 +94,14 @@ prepareTargetVar <- function(target){
   unlink("y_lists.txt")
 }
 
-# system(paste0("python TensorFlowDNNClassifier.py ",
-#               paste0('"', X_lists, '"'),
-#               " ", 
-#               paste0('"', y_lists, '"')))
+trainTestSplit <- function(test_percent=0.25){
+  
+  cat(sprintf('
+X_train, X_test, y_train, y_test = train_test_split( \
+X, y, test_size=%f, random_state=42)
+', test_percent))
+  
+}
+
 
 
