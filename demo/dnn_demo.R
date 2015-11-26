@@ -5,12 +5,13 @@ source('rflow_experiment.R')
 data(iris)
 library(pipeR)
 
+# configs for DNN classifier
 predictors <- iris[1:4]
 target <- iris[,5]
 test_percent <- 0.25
 hidden_units <- c(10, 20, 10)
-n_classes <- 3
-steps <- 200
+n_classes <- length(unique(target))
+steps <- 400
 
 sink("test.py")
 importDeps()
