@@ -1,0 +1,9 @@
+Package: rflow
+Title: R Wrapper for Google TensorFlow
+Version: 0.0.0.9000
+Authors@R: person("Yuan", "Tang", email = "terrytangyuan@gmail.com", role = c("aut", "cre"))
+Description: This package provides a simple pipelining interface for TensorFlow in R.
+Depends: R (>= 3.2.1)
+License: MIT + File LICENSE
+LazyData: true
+Suggests: testthat
