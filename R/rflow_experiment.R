@@ -201,3 +201,11 @@ X = digits.images
 y = digits.target
 ')
 }
+
+# TODO: different splitting method
+# Travis test
+# Refactoring
+# Enable customized test set without using splitting method
+# Text classification
+
+
