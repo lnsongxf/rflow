@@ -54,13 +54,14 @@ createFuncStr <- function(funcName, ...){
 # for named arguments
 additionalArgs <- function(theDots){
   paste0(ifelse(length(theDots) != 0, ", ", ""), 
-         createArgs(theDots, getFunc = dynGet))
+         createArgs(theDots, getFunc = get))
 }
 
 # funcWriter(ConvModel(), funcHeader = def conv_model(X, y):)
 funcWriter <- function(body, funcHeader= 'def f():', returnValue = NULL){
   cat(paste0(funcHeader, "\n"))
   body
+  cat(paste0("\t", returnValue, "\n"))
 }
 
 TensorFlowDNNClassifier <- function(hidden_units, n_classes, ...){
@@ -82,34 +83,33 @@ TensorFlowDNNRegressor <- function(hidden_units, ...){
 #' @param ... Additional argument except the tensor input
 #' e.g. TensorTransformation('f', 1, c(1,2,3))  => X = tf.f(X, 1, [1, 2, 3])
 TensorTransformation <- function(funcName, ...){
-  cat(paste0("X = tf.", funcName, "(X, ", 
+  paste0("X = ", funcName, "(X, ", 
              insertPyObjsStr(...), 
-             ")\n"))
-}
-# TODO: tab not working
-ConvModel <- function(n_filters = 12, filter_shape = c(3, 3), 
-                      activ_func='logistic_regression',
-                      transform_method = 'expand_dims',
-                      reduce_method = 'reduce_max', reduction_indices = c(1, 2),
-                      shape = c(-1, 12),
-                      ...){
-  cat(sprintf(
-"
-  %s
-  %s
-  %s
-",
-  TensorTransformation(transform_method, 3),
-  TensorTransformation('skflow.ops.conv2d', n_filters, filter_shape, ...),
-  TensorTransformation(reduce_method, reduction_indices),
-  TensorTransformation('reshape', shape)
-  ))
+             ")\n")
 }
 
-TensorFlowEstimator <- function(model_fn, n_classes, ...){
+ConvModel <- function(n_filters = 12, filter_shape = c(3, 3), 
+                      activ_func='logistic_regression',
+                      transform_method = 'tf.expand_dims',
+                      reduce_method = 'tf.reduce_max', reduction_indices = c(1, 2),
+                      shape = c(-1, 12),
+                      ...){
+  funcWriter(
+    body = {
+      cat(sprintf("\t%s\t%s\t%s\t%s",
+        TensorTransformation(transform_method, 3),
+        TensorTransformation('skflow.ops.conv2d', n_filters, filter_shape, ...),
+        TensorTransformation(reduce_method, reduction_indices),
+        TensorTransformation('tf.reshape', shape)
+      ))}, 
+    funcHeader = "def custom_model(X, y):",
+    returnValue = paste0("return skflow.models.", activ_func, "(X, y)"))
+}
+
+TensorFlowEstimator <- function(n_classes, ...){
   theDots <- list(...)
-  cat(paste0("model = skflow.TensorFlowEstimator(",
-             createArgs(c("model_fn", "n_classes")), 
+  cat(paste0("model = skflow.TensorFlowEstimator(model_fn=custom_model,",
+             createArgs(c("n_classes")), 
              additionalArgs(theDots),
              ")\n"))
 }
@@ -192,3 +192,12 @@ print("MSE: %f" % score)
   ')
 }
 
+loadMINST <- function(){
+  cat(
+'
+from sklearn import datasets
+digits = datasets.load_digits()
+X = digits.images
+y = digits.target
+')
+}

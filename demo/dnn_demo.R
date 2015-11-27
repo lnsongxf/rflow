@@ -12,7 +12,7 @@ steps <- 400
 
 sink("test.py")
 importDeps()
-TensorFlowDNNClassifier(hidden_units = hidden_units, n_classes = n_classes)
+TensorFlowDNNClassifier(hidden_units = hidden_units, n_classes = n_classes, steps=steps)
 preparePredictors(predictors)
 prepareTargetVar(target)
 trainTestSplit(test_percent)
@@ -25,7 +25,7 @@ system("python test.py")
 
 
 ## example of using DNN regressor
-# library(MASS)
+library(MASS)
 data(Boston)
 # configs for DNN regressor
 predictors <- Boston[,2:14]
