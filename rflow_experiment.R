@@ -32,25 +32,20 @@ createArgs <- function(names){
 
 TensorFlowDNNClassifier <- function(hidden_units, n_classes, ...){
   theDots <- list(...)
-  cat(paste0("classifier = skflow.TensorFlowDNNClassifier(",
+  cat(paste0("model = skflow.TensorFlowDNNClassifier(",
          createArgs(c("hidden_units", "n_classes")), 
          ifelse(length(theDots) != 0, ", ", ""),
          createArgs(theDots),
          ")\n"))
 }
 
-predict <- function(){
-  cat("predictions = classifier.predict(X_test)\n")
-}
-fit <- function(){
-  cat("classifier.fit(X_train, y_train)\n")
-}
-
-accuracyScore <- function(){
-  cat('
-score = metrics.accuracy_score(predictions, y_test)
-print("Accuracy: %f" % score)
-      ')
+TensorFlowDNNRegressor <- function(hidden_units, ...){
+  theDots <- list(...)
+  cat(paste0("model = skflow.TensorFlowDNNRegressor(",
+             createArgs(c("hidden_units")), 
+             ifelse(length(theDots) != 0, ", ", ""),
+             createArgs(theDots),
+             ")\n"))
 }
 
 preparePredictors <- function(predictors){
@@ -76,15 +71,21 @@ preparePredictors <- function(predictors){
 }
 
 prepareTargetVar <- function(target){
-  python.assign("y", as.integer(as.factor(iris[,5]))-1) # starts from 0
+  # deal with factor target
+  if(is.factor(target)){
+    python.assign("y", as.integer(as.factor(target))-1) # starts from 0
+    dtype <<- 'int64'
+  } else {
+    python.assign("y", target)
+    dtype <<- 'float64'
+  }
+  
   python.exec('
   from numpy import asarray
   f = open("y_lists.txt", "w")
   f.write(json.dumps(y))
   f.close()')
   y_lists <- readLines("y_lists.txt")
-  
-  dtype <<- 'int64'
   
   cat(paste0("y = asarray(",
          y_lists, ", ",
@@ -98,10 +99,29 @@ trainTestSplit <- function(test_percent=0.25){
   
   cat(sprintf('
 X_train, X_test, y_train, y_test = train_test_split( \
-X, y, test_size=%f, random_state=42)
+X, y, test_size=%f, random_state=50)
 ', test_percent))
   
 }
 
+predict <- function(){
+  cat("predictions = model.predict(X_test)\n")
+}
+fit <- function(){
+  cat("model.fit(X_train, y_train)\n")
+}
 
+accuracyScore <- function(){
+  cat('
+score = metrics.accuracy_score(predictions, y_test)
+print("Accuracy: %f" % score)
+      ')
+}
+
+meanSquaredError <- function(){
+  cat('
+score = metrics.mean_squared_error(predictions, y_test)
+print("MSE: %f" % score)
+  ')
+}
 
