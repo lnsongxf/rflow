@@ -29,9 +29,9 @@ toPyObjStr <- function(rObj){
   # if(is.character(rObj) & length(rObj) == 1) {return(rObj)} # deal with edge case
   python.assign('tmp_var', rObj)
   python.exec(sprintf('
-    f = open("tmp_var.txt", "w")
-    f.write(json.dumps(%s))
-    f.close()', 'tmp_var'))
+    with open("tmp_var.txt", "w") as f:
+      f.write(json.dumps(%s))
+      f.close()', 'tmp_var'))
   pyObjStr <- suppressWarnings(readLines('tmp_var.txt'))
   unlink('tmp_var.txt')
   return(pyObjStr)
@@ -53,7 +53,7 @@ createFuncStr <- function(funcName, ...){
 
 # for named arguments
 additionalArgs <- function(theDots){
-  paste0(ifelse(length(theDots) != 0, ", ", ""), 
+  paste0(ifelse(length(theDots) != 0, ", ", ""),
          createArgs(theDots, getFunc = get))
 }
 
@@ -75,7 +75,7 @@ TensorFlowDNNClassifier <- function(hidden_units, n_classes, ...){
 TensorFlowDNNRegressor <- function(hidden_units, ...){
   theDots <- list(...)
   cat(paste0("model = skflow.TensorFlowDNNRegressor(",
-             createArgs(c("hidden_units")), 
+             createArgs(c("hidden_units")),
              additionalArgs(theDots),
              ")\n"))
 }
@@ -83,15 +83,15 @@ TensorFlowDNNRegressor <- function(hidden_units, ...){
 #' @param ... Additional argument except the tensor input
 #' e.g. TensorTransformation('f', 1, c(1,2,3))  => X = tf.f(X, 1, [1, 2, 3])
 TensorTransformation <- function(funcName, ...){
-  paste0("X = ", funcName, "(X, ", 
-             insertPyObjsStr(...), 
+  paste0("X = ", funcName, "(X, ",
+             insertPyObjsStr(...),
              ")\n")
 }
 
-ConvModel <- function(n_filters = 12, filter_shape = c(3, 3), 
+ConvModel <- function(n_filters = 12, filter_shape = c(3, 3),
                       activ_func='logistic_regression',
                       transform_method = 'tf.expand_dims',
-                      reduce_method = 'tf.reduce_max', reduction_indices = c(1, 2),
+                      pool_method = 'tf.reduce_max', reduction_indices = c(1, 2),
                       shape = c(-1, 12),
                       ...){
   funcWriter(
@@ -99,9 +99,9 @@ ConvModel <- function(n_filters = 12, filter_shape = c(3, 3),
       cat(sprintf("\t%s\t%s\t%s\t%s",
         TensorTransformation(transform_method, 3),
         TensorTransformation('skflow.ops.conv2d', n_filters, filter_shape, ...),
-        TensorTransformation(reduce_method, reduction_indices),
+        TensorTransformation(pool_method, reduction_indices),
         TensorTransformation('tf.reshape', shape)
-      ))}, 
+      ))},
     funcHeader = "def custom_model(X, y):",
     returnValue = paste0("return skflow.models.", activ_func, "(X, y)"))
 }
@@ -109,7 +109,7 @@ ConvModel <- function(n_filters = 12, filter_shape = c(3, 3),
 TensorFlowEstimator <- function(n_classes, ...){
   theDots <- list(...)
   cat(paste0("model = skflow.TensorFlowEstimator(model_fn=custom_model,",
-             createArgs(c("n_classes")), 
+             createArgs(c("n_classes")),
              additionalArgs(theDots),
              ")\n"))
 }
@@ -125,14 +125,14 @@ preparePredictors <- function(predictors){
   f.write(json.dumps(X_lists))
   f.close()')
   X_lists <- suppressWarnings(readLines("X_lists.txt"))
-  
+
   dtype <<- 'float64'
-  
+
   cat(paste0("X = asarray(",
          X_lists, ", ",
          createArgs('dtype'),
          ")\n"))
-  
+
   unlink("X_lists.txt")
 }
 
@@ -145,29 +145,29 @@ prepareTargetVar <- function(target){
     python.assign("y", target)
     dtype <<- 'float64'
   }
-  
+
   python.exec('
   from numpy import asarray
   f = open("y_lists.txt", "w")
   f.write(json.dumps(y))
   f.close()')
   y_lists <- suppressWarnings(readLines("y_lists.txt"))
-  
+
   cat(paste0("y = asarray(",
          y_lists, ", ",
          createArgs('dtype'),
          ")\n"))
-  
+
   unlink("y_lists.txt")
 }
 
 trainTestSplit <- function(test_percent=0.25){
-  
+
   cat(sprintf('
 X_train, X_test, y_train, y_test = train_test_split( \
 X, y, test_size=%f, random_state=50)
 ', test_percent))
-  
+
 }
 
 predict <- function(){
