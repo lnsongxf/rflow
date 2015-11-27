@@ -1,4 +1,4 @@
-source('rflow_experiment.R')
+source('./R/rflow_experiment.R')
 # Deep Neural Network in R
 
 ## example of using DNN classifier

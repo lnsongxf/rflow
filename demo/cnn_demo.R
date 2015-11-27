@@ -1,4 +1,4 @@
-source('rflow_experiment.R')
+source('./R/rflow_experiment.R')
 # Convolutional Neural Network in R
 
 test_percent <- 0.25
@@ -12,7 +12,8 @@ importDeps()
 loadMINST()
 trainTestSplit(test_percent)
 ConvModel()
-TensorFlowEstimator(n_classes=n_classes, steps=steps, learning_rate=learning_rate, batch_size=batch_size)
+TensorFlowEstimator(n_classes=n_classes, steps=steps,
+                    learning_rate=learning_rate, batch_size=batch_size)
 fit()
 predict()
 accuracyScore()
