@@ -57,6 +57,12 @@ additionalArgs <- function(theDots){
          createArgs(theDots, getFunc = dynGet))
 }
 
+# funcWriter(ConvModel(), funcHeader = def conv_model(X, y):)
+funcWriter <- function(body, funcHeader= 'def f():', returnValue = NULL){
+  cat(paste0(funcHeader, "\n"))
+  body
+}
+
 TensorFlowDNNClassifier <- function(hidden_units, n_classes, ...){
   theDots <- list(...)
   cat(paste0("model = skflow.TensorFlowDNNClassifier(",
@@ -80,22 +86,24 @@ TensorTransformation <- function(funcName, ...){
              insertPyObjsStr(...), 
              ")\n"))
 }
-
+# TODO: tab not working
 ConvModel <- function(n_filters = 12, filter_shape = c(3, 3), 
                       activ_func='logistic_regression',
                       transform_method = 'expand_dims',
                       reduce_method = 'reduce_max', reduction_indices = c(1, 2),
                       shape = c(-1, 12),
                       ...){
-  
-  TensorTransformation(transform_method, 3)
-  
-  TensorTransformation('skflow.ops.conv2d', n_filters, filter_shape, ...)
-  
-  TensorTransformation(reduce_method, reduction_indices)
-  
+  cat(sprintf(
+"
+  %s
+  %s
+  %s
+",
+  TensorTransformation(transform_method, 3),
+  TensorTransformation('skflow.ops.conv2d', n_filters, filter_shape, ...),
+  TensorTransformation(reduce_method, reduction_indices),
   TensorTransformation('reshape', shape)
-  
+  ))
 }
 
 TensorFlowEstimator <- function(model_fn, n_classes, ...){
