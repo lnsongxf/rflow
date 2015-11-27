@@ -11,31 +11,57 @@ import skflow
 from numpy import asarray
 import sys
 import json
+import tensorflow as tf
 ")
 }
 
-createArgs <- function(names){
+createArgs <- function(names, getFunc=get){
   if(length(names) == 0) return(NULL)
   if(is.list(names)){names <- names(names)} # deal with additional arguments
   paste(unlist(lapply(names, function(name){
-    python.assign(name, get(name))
-    python.exec(sprintf('
-    f = open("tmp_var.txt", "w")
-    f.write(json.dumps(%s))
-    f.close()', name))
-    RHS <- readLines('tmp_var.txt')
-    unlink('tmp_var.txt')
-    # RHS <- capture.output(dput(get(name)))
+    RHS <- toPyObjStr(getFunc(name))
     paste0(name, "=", RHS)
   })), collapse = ", ")
+}
+
+# c(1,2,3) => [1,2,3]
+toPyObjStr <- function(rObj){
+  # if(is.character(rObj) & length(rObj) == 1) {return(rObj)} # deal with edge case
+  python.assign('tmp_var', rObj)
+  python.exec(sprintf('
+    f = open("tmp_var.txt", "w")
+    f.write(json.dumps(%s))
+    f.close()', 'tmp_var'))
+  pyObjStr <- suppressWarnings(readLines('tmp_var.txt'))
+  unlink('tmp_var.txt')
+  return(pyObjStr)
+}
+
+# for annonymous args
+# insertPyObjsStr(3, c(1,2,3))  => "3, [1, 2, 3]"
+insertPyObjsStr <- function(...){
+  args <- list(...)
+  paste(unlist(lapply(args, function(arg){
+    toPyObjStr(arg)
+  })), collapse = ", ")
+}
+
+# createFuncStr('f', 3, c(1,2,3))  => "f(3, [1, 2, 3])"
+createFuncStr <- function(funcName, ...){
+  paste0(funcName, sprintf('(%s)', insertPyObjsStr(...)))
+}
+
+# for named arguments
+additionalArgs <- function(theDots){
+  paste0(ifelse(length(theDots) != 0, ", ", ""), 
+         createArgs(theDots, getFunc = dynGet))
 }
 
 TensorFlowDNNClassifier <- function(hidden_units, n_classes, ...){
   theDots <- list(...)
   cat(paste0("model = skflow.TensorFlowDNNClassifier(",
-         createArgs(c("hidden_units", "n_classes")), 
-         ifelse(length(theDots) != 0, ", ", ""),
-         createArgs(theDots),
+         createArgs(c("hidden_units", "n_classes")),
+         additionalArgs(theDots),
          ")\n"))
 }
 
@@ -43,8 +69,40 @@ TensorFlowDNNRegressor <- function(hidden_units, ...){
   theDots <- list(...)
   cat(paste0("model = skflow.TensorFlowDNNRegressor(",
              createArgs(c("hidden_units")), 
-             ifelse(length(theDots) != 0, ", ", ""),
-             createArgs(theDots),
+             additionalArgs(theDots),
+             ")\n"))
+}
+
+#' @param ... Additional argument except the tensor input
+#' e.g. TensorTransformation('f', 1, c(1,2,3))  => X = tf.f(X, 1, [1, 2, 3])
+TensorTransformation <- function(funcName, ...){
+  cat(paste0("X = tf.", funcName, "(X, ", 
+             insertPyObjsStr(...), 
+             ")\n"))
+}
+
+ConvModel <- function(n_filters = 12, filter_shape = c(3, 3), 
+                      activ_func='logistic_regression',
+                      transform_method = 'expand_dims',
+                      reduce_method = 'reduce_max', reduction_indices = c(1, 2),
+                      shape = c(-1, 12),
+                      ...){
+  
+  TensorTransformation(transform_method, 3)
+  
+  TensorTransformation('skflow.ops.conv2d', n_filters, filter_shape, ...)
+  
+  TensorTransformation(reduce_method, reduction_indices)
+  
+  TensorTransformation('reshape', shape)
+  
+}
+
+TensorFlowEstimator <- function(model_fn, n_classes, ...){
+  theDots <- list(...)
+  cat(paste0("model = skflow.TensorFlowEstimator(",
+             createArgs(c("model_fn", "n_classes")), 
+             additionalArgs(theDots),
              ")\n"))
 }
 
@@ -58,7 +116,7 @@ preparePredictors <- function(predictors){
   f = open("X_lists.txt", "w")
   f.write(json.dumps(X_lists))
   f.close()')
-  X_lists <- readLines("X_lists.txt")
+  X_lists <- suppressWarnings(readLines("X_lists.txt"))
   
   dtype <<- 'float64'
   
@@ -85,7 +143,7 @@ prepareTargetVar <- function(target){
   f = open("y_lists.txt", "w")
   f.write(json.dumps(y))
   f.close()')
-  y_lists <- readLines("y_lists.txt")
+  y_lists <- suppressWarnings(readLines("y_lists.txt"))
   
   cat(paste0("y = asarray(",
          y_lists, ", ",
@@ -111,6 +169,7 @@ fit <- function(){
   cat("model.fit(X_train, y_train)\n")
 }
 
+## metrics
 accuracyScore <- function(){
   cat('
 score = metrics.accuracy_score(predictions, y_test)
