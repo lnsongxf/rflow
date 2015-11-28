@@ -8,9 +8,9 @@ import random
 from sklearn import metrics
 from sklearn.cross_validation import train_test_split
 import skflow
-from numpy import asarray
+from numpy import asarray, ndarray
 import sys
-import json
+from json import dumps
 import tensorflow as tf
 ")
 }
@@ -70,10 +70,11 @@ preparePredictors <- function(predictors){
   python.exec('
   from pandas import DataFrame
   from numpy import asarray
+  from json import dumps
   X_df = DataFrame(X)
   X_lists = X_df.values.tolist()
   f = open("X_lists.txt", "w")
-  f.write(json.dumps(X_lists))
+  f.write(dumps(X_lists))
   f.close()')
   X_lists <- suppressWarnings(readLines("X_lists.txt"))
 
@@ -99,8 +100,9 @@ prepareTargetVar <- function(target){
 
   python.exec('
   from numpy import asarray
+  from json import dumps
   f = open("y_lists.txt", "w")
-  f.write(json.dumps(y))
+  f.write(dumps(y))
   f.close()')
   y_lists <- suppressWarnings(readLines("y_lists.txt"))
 
@@ -121,8 +123,9 @@ X, y, test_size=%f, random_state=50)
 
 }
 
-predict <- function(){
+predict <- function(save = F){
   cat("predictions = model.predict(X_test)\n")
+  if(save){savePyObjToFile('predictions')}
 }
 fit <- function(){
   cat("model.fit(X_train, y_train)\n")

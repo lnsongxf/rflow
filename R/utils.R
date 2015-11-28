@@ -12,12 +12,33 @@ createArgs <- function(names, getFunc=get){
 toPyObjStr <- function(rObj){
   python.assign('tmp_var', rObj)
   python.exec(sprintf('
+                      from json import dumps
                       with open("tmp_var.txt", "w") as f:
-                        f.write(json.dumps(%s))
+                        f.write(dumps(%s))
                         f.close()', 'tmp_var'))
   pyObjStr <- suppressWarnings(readLines('tmp_var.txt'))
   unlink('tmp_var.txt')
   return(pyObjStr)
+}
+
+# save a Python object to a text file
+savePyObjToFile <- function(pyVarName){
+
+  fileName <- paste0(pyVarName, '.txt')
+  cat(sprintf('
+with open("%s", "w") as f:
+\tif(isinstance(%s, ndarray)):
+\t\tf.write(dumps(ndarray.tolist(%s)))
+\telse:
+\t\tf.write(dumps(%s))
+\tf.close()', fileName, pyVarName, pyVarName, pyVarName))
+}
+
+# load a python string from a file to an R object
+loadPyStrToR <- function(pyVarName){
+  fileName <- paste0(pyVarName, '.txt')
+  python.exec(paste0(pyVarName, " = ", readLines(fileName)))
+  return(python.get(pyVarName))
 }
 
 # for annonymous args
@@ -46,3 +67,4 @@ funcWriter <- function(body, funcHeader= 'def f():', returnValue = NULL){
   body
   cat(paste0("\t", returnValue, "\n"))
 }
+

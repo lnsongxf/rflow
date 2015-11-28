@@ -16,7 +16,7 @@ preparePredictors(predictors)
 prepareTargetVar(target)
 trainTestSplit(test_percent)
 fit()
-predict()
+predict(save = T)
 accuracyScore()
 sink()
 
