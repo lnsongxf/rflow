@@ -1,13 +1,11 @@
 # Convolutional Neural Network in R
-
-test_percent <- 0.25
 n_classes <- 10
 steps <- 400
 learning_rate <- .045
 batch_size <- 120
 
 rflowPipeline(eval_metric = 'accuracy_score',
-              test_percent = test_percent,
+              test_percent = 0.25,
               loadMINST(),
               ConvModel(),
               TensorFlowEstimator(n_classes = n_classes,
