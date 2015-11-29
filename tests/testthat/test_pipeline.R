@@ -27,8 +27,8 @@ rflowPipeline(accuracyScore(),
               test_percent = test_percent,
               loadMINST(),
               ConvModel(),
-              TensorFlowEstimator(n_classes=n_classes,
+              TensorFlowEstimator(n_classes = n_classes,
                                   steps=steps,
-                                  learning_rate=learning_rate,
-                                  batch_size=batch_size)
+                                  learning_rate = learning_rate,
+                                  batch_size = batch_size)
 )
