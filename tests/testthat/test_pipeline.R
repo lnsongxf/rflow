@@ -8,7 +8,7 @@ hidden_units <<- c(10, 20, 10)
 n_classes <<- length(unique(target))
 steps <<- 400
 
-rflowPipeline(accuracyScore(),
+rflowPipeline(eval_metric = 'accuracy_score',
               test_percent = test_percent,
               TensorFlowDNNClassifier(hidden_units = hidden_units,
                                       n_classes = n_classes,
@@ -23,7 +23,7 @@ steps <<- 400
 learning_rate <<- .045
 batch_size <<- 120
 
-rflowPipeline(accuracyScore(),
+rflowPipeline(eval_metric = 'accuracy_score',
               test_percent = test_percent,
               loadMINST(),
               ConvModel(),

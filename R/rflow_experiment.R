@@ -140,25 +140,19 @@ rflowPipeline <- function(eval_metric, test_percent, ...){
   trainTestSplit(test_percent)
   fit()
   predict()
-  eval_metric
+  evalFunc(eval_metric)
   sink()
 
   system("python test.py")
 }
 
-## metrics
-accuracyScore <- function(){
-  cat('
-score = metrics.accuracy_score(predictions, y_test)
-print("Accuracy: %f" % score)
-      ')
-}
-
-meanSquaredError <- function(){
-  cat('
-score = metrics.mean_squared_error(predictions, y_test)
-print("MSE: %f" % score)
-  ')
+## evaluation metrics
+# e.g. accuracy_score, mean_squared_error, etc (more here: http://scikit-learn.org/stable/modules/classes.html#sklearn-metrics-metrics)
+evalFunc <- function(eval_metric){
+  cat(sprintf('
+score = metrics.%s(predictions, y_test)
+print("Evaluation Score: " + str(score))
+      ', eval_metric))
 }
 
 # used for quick testing
@@ -173,10 +167,9 @@ y = digits.target
 }
 
 # TODOs:
-# More eval metrics
 # Travis test
 # Refactoring
 # Enable customized test set without using splitting method
 # Text classification
-
+# Borrow some interface usage for caret/sklearn
 

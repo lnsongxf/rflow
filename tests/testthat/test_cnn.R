@@ -14,7 +14,7 @@ ConvModel()
 TensorFlowEstimator(n_classes=n_classes, steps=steps, learning_rate=learning_rate, batch_size=batch_size)
 fit()
 predict()
-accuracyScore()
+evalFunc('accuracy_score')
 sink()
 
 system("python test.py")
