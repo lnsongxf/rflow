@@ -1,4 +1,4 @@
-context('Testing CNN classifier.')
+context('Testing CNN classifier')
 
 test_percent <<- 0.25
 n_classes <<- 10

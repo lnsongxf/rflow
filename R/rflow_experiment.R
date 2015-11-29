@@ -123,12 +123,27 @@ X, y, test_size=%f, random_state=50)
 
 }
 
+fit <- function(){
+  cat("model.fit(X_train, y_train)\n")
+}
+
 predict <- function(save = F){
   cat("predictions = model.predict(X_test)\n")
   if(save){savePyObjToFile('predictions')}
 }
-fit <- function(){
-  cat("model.fit(X_train, y_train)\n")
+
+rflowPipeline <- function(eval_metric, test_percent, ...){
+
+  sink("test.py")
+  importDeps()
+  theDots <- list(...) # execute
+  trainTestSplit(test_percent)
+  fit()
+  predict()
+  eval_metric
+  sink()
+
+  system("python test.py")
 }
 
 ## metrics
@@ -157,7 +172,8 @@ y = digits.target
 ')
 }
 
-# TODO: different splitting method
+# TODOs:
+# More eval metrics
 # Travis test
 # Refactoring
 # Enable customized test set without using splitting method

@@ -1,4 +1,4 @@
-context('Testing DNN classifier and regressor.')
+context('Testing DNN classifier and regressor')
 
 ## example of using DNN classifier
 # configs for DNN classifier
