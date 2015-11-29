@@ -1,0 +1,28 @@
+sudo: true
+
+language: cpp
+
+os:
+  - linux
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - wget
+
+install:
+  - source travis_install.sh
+
+script:
+  - Rscript -e "devtools::test()"
+
+cache:
+  directories:
+    - ${HOME}/.cache/usr
+
+notifications:
+  email:
+    on_success: change
+    on_failure: always
