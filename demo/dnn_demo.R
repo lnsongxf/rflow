@@ -9,7 +9,7 @@ hidden_units <- c(10, 20, 10)
 n_classes <- length(unique(target))
 steps <- 400
 
-rflowPipeline(accuracyScore(),
+rflowPipeline(eval_metric = 'accuracy_score',
               test_percent = test_percent,
               TensorFlowDNNClassifier(hidden_units = hidden_units,
                                       n_classes = n_classes,
@@ -29,7 +29,7 @@ hidden_units <- c(10, 20, 10)
 n_classes <- 0
 steps <- 400
 
-rflowPipeline(meanSquaredError(),
+rflowPipeline(eval_metric = 'mean_squared_error',
               test_percent = test_percent,
               TensorFlowDNNRegressor(hidden_units = hidden_units),
               preparePredictors(predictors),

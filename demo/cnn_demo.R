@@ -6,7 +6,7 @@ steps <- 400
 learning_rate <- .045
 batch_size <- 120
 
-rflowPipeline(accuracyScore(),
+rflowPipeline(eval_metric = 'accuracy_score',
               test_percent = test_percent,
               loadMINST(),
               ConvModel(),
