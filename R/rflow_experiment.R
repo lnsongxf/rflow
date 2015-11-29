@@ -32,11 +32,9 @@ TensorFlowDNNRegressor <- function(hidden_units, ...){
 }
 
 #' @param ... Additional argument except the tensor input
-#' e.g. TensorTransformation('f', 1, c(1,2,3))  => X = tf.f(X, 1, [1, 2, 3])
+#' e.g. TensorTransformation('f', 1, c(1,2,3))  => X = f(X, 1, [1, 2, 3])
 TensorTransformation <- function(funcName, ...){
-  paste0("X = ", funcName, "(X, ",
-             insertPyObjsStr(...),
-             ")\n")
+  funcExecuteWriter('X', funcName, 'X', ...)
 }
 
 ConvModel <- function(n_filters = 12, filter_shape = c(3, 3),
@@ -167,7 +165,6 @@ y = digits.target
 }
 
 # TODOs:
-# Travis test
 # Refactoring
 # Enable customized test set without using splitting method
 # Text classification

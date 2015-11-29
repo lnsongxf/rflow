@@ -68,3 +68,11 @@ funcWriter <- function(body, funcHeader= 'def f():', returnValue = NULL){
   cat(paste0("\t", returnValue, "\n"))
 }
 
+# funcExecuteWriter('X', 'f', 'X', 3, c(1,2,3))  => "X = f(X, 3, [1, 2, 3])\n"
+funcExecuteWriter <- function(LHS, funcName, firstArg, ...){
+  sprintf("%s = %s(%s, %s)\n",
+         LHS, funcName, firstArg, insertPyObjsStr(...))
+}
+
+
+
