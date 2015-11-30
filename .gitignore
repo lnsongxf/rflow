@@ -3,3 +3,4 @@
 .RData
 test.py
 ./tests/test.py
+testResults.Rout

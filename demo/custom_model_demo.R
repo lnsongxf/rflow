@@ -11,6 +11,7 @@ rflowPipeline(eval_metric = 'accuracy_score',
               customModelWriter(
                 funcInput = c('X', 'y'),
                 returnValue = 'skflow.models.logistic_regression(X, y)',
+                # you can append as many transformations as you like
                 TensorTransformation('skflow.ops.dnn', c(12, 18, 12), keep_prob=0.45)),
               TensorFlowEstimator(n_classes = n_classes),
               preparePredictors(predictors),

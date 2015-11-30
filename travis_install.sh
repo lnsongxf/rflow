@@ -12,11 +12,9 @@ sudo pip install SciPy
 sudo pip install pandas
 # tensorflow for separate os
 if [ ${TRAVIS_OS_NAME} == "linux" ]; then
-  sudo apt-get install python-sklearn
   sudo pip install https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.5.0-cp27-none-linux_x86_64.whl
 fi
 if [ ${TRAVIS_OS_NAME} == "osx" ]; then
-  sudo pip install sklearn
   sudo pip install https://storage.googleapis.com/tensorflow/mac/tensorflow-0.5.0-py2-none-any.whl
 fi
 sudo pip install git+git://github.com/google/skflow.git

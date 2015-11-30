@@ -12,12 +12,15 @@ addons:
       - ubuntu-toolchain-r-test
     packages:
       - wget
+      - libatlas3gf-base
+      - libatlas-dev
+      - python-sklearn
 
 install:
   - source travis_install.sh
 
 script:
-  - Rscript -e "devtools::test()"
+  - run_tests.sh
 
 cache:
   directories:

@@ -85,7 +85,9 @@ additionalArgs <- function(theDots){
 funcWriter <- function(body, funcHeader= 'def f():', returnValue = NULL){
   cat(paste0(funcHeader, "\n"))
   cat(body)
-  cat(paste0("\treturn(", returnValue, ")\n"))
+  if(!is.null(returnValue)){
+    cat(paste0("\treturn(", returnValue, ")\n"))
+  }
 }
 
 
@@ -104,14 +106,13 @@ tabFuncExecuteWriter <- function(LHS, funcName, firstArg, ...){
 }
 
 
-# customModelWriter(returnValue = "", funcInput = c('X', 'y'),
-                  # tabFuncExecuteWriter('X', 'f1', 'X', 3, c(1,2,3)),
-                  # tabFuncExecuteWriter('y', 'f2', 'X', 3, c(1,2,3)))
+# customModelWriter(returnValue = NULL, funcInput = c('X', 'y'),
+#                   tabFuncExecuteWriter('X', 'f1', 'X', 3, c(1,2,3)),
+#                   tabFuncExecuteWriter('y', 'f2', 'X', 3, c(1,2,3)))
 # ==>
 # def custom_model(X,y):
 #   X = f1(X, 3, [1, 2, 3])
 #   y = f2(X, 3, [1, 2, 3])
-#   return()
 customModelWriter <- function(returnValue, funcInput, ...){
   funcWriter(body = unlist(list(...)),
              funcHeader = sprintf('def custom_model(%s):',
