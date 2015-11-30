@@ -61,18 +61,40 @@ additionalArgs <- function(theDots){
          createArgs(theDots, getFunc = get))
 }
 
-# funcWriter(ConvModel(), funcHeader = def conv_model(X, y):)
 funcWriter <- function(body, funcHeader= 'def f():', returnValue = NULL){
   cat(paste0(funcHeader, "\n"))
-  body
-  cat(paste0("\t", returnValue, "\n"))
+  cat(body)
+  cat(paste0("\treturn(", returnValue, ")\n"))
 }
 
+# not used yet
 # funcExecuteWriter('X', 'f', 'X', 3, c(1,2,3))  => "X = f(X, 3, [1, 2, 3])\n"
 funcExecuteWriter <- function(LHS, funcName, firstArg, ...){
   sprintf("%s = %s(%s, %s)\n",
          LHS, funcName, firstArg, insertPyObjsStr(...))
 }
+
+# tabFuncExecuteWriter('X', 'f', 'X', 3, c(1,2,3))
+tabFuncExecuteWriter <- function(LHS, funcName, firstArg, ...){
+  sprintf("\t%s = %s(%s, %s)\n",
+          LHS, funcName, firstArg, insertPyObjsStr(...))
+}
+
+# customModelWriter(returnValue = "", funcInput = c('X', 'y'),
+#                   tabFuncExecuteWriter('X', 'f1', 'X', 3, c(1,2,3)),
+#                   tabFuncExecuteWriter('y', 'f2', 'X', 3, c(1,2,3)))
+# ==>
+# def custom_model(X,y):
+#   X = f1(X, 3, [1, 2, 3])
+#   y = f2(X, 3, [1, 2, 3])
+#   return()
+customModelWriter <- function(returnValue, funcInput, ...){
+  funcWriter(body = unlist(list(...)),
+             funcHeader = sprintf('def custom_model(%s):',
+                                  paste(funcInput, collapse = ",")),
+             returnValue = returnValue)
+}
+
 
 
 

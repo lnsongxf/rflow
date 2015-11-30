@@ -34,7 +34,7 @@ TensorFlowDNNRegressor <- function(hidden_units, ...){
 #' @param ... Additional argument except the tensor input
 #' e.g. TensorTransformation('f', 1, c(1,2,3))  => X = f(X, 1, [1, 2, 3])
 TensorTransformation <- function(funcName, ...){
-  funcExecuteWriter('X', funcName, 'X', ...)
+  tabFuncExecuteWriter('X', funcName, 'X', ...)
 }
 
 ConvModel <- function(n_filters = 12, filter_shape = c(3, 3),
@@ -43,16 +43,13 @@ ConvModel <- function(n_filters = 12, filter_shape = c(3, 3),
                       pool_method = 'tf.reduce_max', reduction_indices = c(1, 2),
                       shape = c(-1, 12),
                       ...){
-  funcWriter(
-    body = {
-      cat(sprintf("\t%s\t%s\t%s\t%s",
-        TensorTransformation(transform_method, 3),
-        TensorTransformation('skflow.ops.conv2d', n_filters, filter_shape, ...),
-        TensorTransformation(pool_method, reduction_indices),
-        TensorTransformation('tf.reshape', shape)
-      ))},
-    funcHeader = "def custom_model(X, y):",
-    returnValue = paste0("return skflow.models.", activ_func, "(X, y)"))
+  customModelWriter(
+    funcInput = c('X', 'y'),
+    returnValue = paste0("skflow.models.", activ_func, "(X, y)"),
+    TensorTransformation(transform_method, 3),
+    TensorTransformation('skflow.ops.conv2d', n_filters, filter_shape, ...),
+    TensorTransformation(pool_method, reduction_indices),
+    TensorTransformation('tf.reshape', shape))
 }
 
 TensorFlowEstimator <- function(n_classes, ...){
