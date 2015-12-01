@@ -5,10 +5,10 @@
 This is an experimental and work-in-progress R library for easily using Google TensorFlow, inspired by Google skflow package.
 
 # Dependencies
-## Python Packages (Get pip from (here)[http://pip.readthedocs.org/en/stable/installing/] first)
+## Python Packages (get pip from [here](http://pip.readthedocs.org/en/stable/installing/) first)
 * sklearn (install via `pip install -U scikit-learn`)
 * pandas (install via `pip install pandas`)
-* tensorflow (instruction (here)[https://github.com/tensorflow/tensorflow#binary-installation])
+* tensorflow (instruction [here](https://github.com/tensorflow/tensorflow#binary-installation))
 * skflow (install via `pip install git+git://github.com/google/skflow.git`)
 
 ## R Packages
