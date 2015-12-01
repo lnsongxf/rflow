@@ -31,16 +31,12 @@ TensorFlowDNNRegressor <- function(hidden_units, ...){
              ")\n"))
 }
 
-#' @param ... Additional argument except the tensor input
-#' e.g. TensorTransformation('f', 1, c(1,2,3))  => X = f(X, 1, [1, 2, 3])
-TensorTransformation <- function(funcName, ...){
-  tabFuncExecuteWriter('X', funcName, 'X', ...)
-}
-
-# TensorOperator('conv2d', nfilters = 3, filter_shape = c(1,2))
-# => "\tX = skflow.ops.conv2d(X, nfilters=3, filter_shape=[1, 2])\n"
-TensorOperator <- function(name, ...){
-  TensorTransformation(paste0('skflow.ops.', name), ...)
+TensorFlowEstimator <- function(n_classes, ...){
+  theDots <- list(...)
+  cat(paste0("model = skflow.TensorFlowEstimator(model_fn=custom_model,",
+             createArgs(c("n_classes")),
+             additionalArgs(theDots),
+             ")\n"))
 }
 
 ConvModel <- function(n_filters = 12, filter_shape = c(3, 3),
@@ -51,19 +47,11 @@ ConvModel <- function(n_filters = 12, filter_shape = c(3, 3),
                       ...){
   customModelWriter(
     funcInput = c('X', 'y'),
-    returnValue = paste0("skflow.models.", activ_func, "(X, y)"),
-    TensorTransformation(transform_method, 3),
+    returnValue = TensorActivator(activ_func),
+    TensorTransformer(transform_method, 3),
     TensorOperator('conv2d', n_filters = n_filters, filter_shape = filter_shape, ...),
-    TensorTransformation(pool_method, reduction_indices),
-    TensorTransformation('tf.reshape', shape))
-}
-
-TensorFlowEstimator <- function(n_classes, ...){
-  theDots <- list(...)
-  cat(paste0("model = skflow.TensorFlowEstimator(model_fn=custom_model,",
-             createArgs(c("n_classes")),
-             additionalArgs(theDots),
-             ")\n"))
+    TensorTransformer(pool_method, reduction_indices),
+    TensorTransformer('tf.reshape', shape))
 }
 
 preparePredictors <- function(predictors){
