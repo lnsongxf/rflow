@@ -47,15 +47,22 @@ loadPyStrToR <- function(pyVarName){
 
 # for annonymous args
 # insertPyObjsStr(3, c(1,2,3))  => "3, [1, 2, 3]"
+# insertPyObjsStr(shape=c(3,3))  => "shape=[3, 3]"
 insertPyObjsStr <- function(...){
   args <- list(...)
   namedArgsInds <- names(args) != ""
   namedArgs <- names(args)[namedArgsInds]
 
   namedStr <- paste(unlist(lapply(namedArgs, function(name){
-    paste0(name, '=', args[[name]])
+    # deal with edge case where arg is a vector
+    if(is.vector(args[[name]])){
+      paste0(name, '=', toPyObjStr(args[[name]]))
+    } else {
+      paste0(name, '=', args[[name]])
+    }
   })), collapse = ", ")
 
+  # assign unNamedArgs
   if(length(namedArgsInds) == 0){
     unNamedArgs <- args
   } else {
@@ -65,7 +72,12 @@ insertPyObjsStr <- function(...){
     toPyObjStr(arg)
   })), collapse = ", ")
 
-  paste0(unNamedStr, ifelse(namedStr == "", '', ', '), namedStr)
+  # if there's only one arg and it's named
+  if(unNamedStr == "" & length(namedStr) == 1) {
+    namedStr
+  } else{
+    paste0(unNamedStr, ifelse(namedStr == "", '', ', '), namedStr)
+  }
 }
 
 

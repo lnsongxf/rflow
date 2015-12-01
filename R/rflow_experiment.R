@@ -37,6 +37,12 @@ TensorTransformation <- function(funcName, ...){
   tabFuncExecuteWriter('X', funcName, 'X', ...)
 }
 
+# TensorOperator('conv2d', nfilters = 3, filter_shape = c(1,2))
+# => "\tX = skflow.ops.conv2d(X, nfilters=3, filter_shape=[1, 2])\n"
+TensorOperator <- function(name, ...){
+  TensorTransformation(paste0('skflow.ops.', name), ...)
+}
+
 ConvModel <- function(n_filters = 12, filter_shape = c(3, 3),
                       activ_func='logistic_regression',
                       transform_method = 'tf.expand_dims',
@@ -47,7 +53,7 @@ ConvModel <- function(n_filters = 12, filter_shape = c(3, 3),
     funcInput = c('X', 'y'),
     returnValue = paste0("skflow.models.", activ_func, "(X, y)"),
     TensorTransformation(transform_method, 3),
-    TensorTransformation('skflow.ops.conv2d', n_filters, filter_shape, ...),
+    TensorOperator('conv2d', n_filters = n_filters, filter_shape = filter_shape, ...),
     TensorTransformation(pool_method, reduction_indices),
     TensorTransformation('tf.reshape', shape))
 }
