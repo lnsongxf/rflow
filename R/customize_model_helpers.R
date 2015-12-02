@@ -16,28 +16,28 @@
 #' @param ... Additional argument except the tensor input
 #' e.g. TensorTransformer('f', 1, c(1,2,3))  => X = f(X, 1, [1, 2, 3])
 #' Available transformation method are list here: http://www.tensorflow.org/api_docs/python/array_ops.html#tensor-transformations
-TensorTransformer <- function(name, ...){
-  tabFuncExecuteWriter('X', name, 'X', ...)
+TensorTransformer <- function(NAME, ...){
+  tabFuncExecuteWriter('X', NAME, 'X', ...)
 }
 
 # TensorOperator('conv2d', n_filters = 3, filter_shape = c(1,2))
 # => "\tX = skflow.ops.conv2d(X, n_filters=3, filter_shape=[1, 2])\n"
 # Available operators are: conv2d, dnn
-TensorOperator <- function(name, ...){
-  TensorTransformer(paste0('skflow.ops.', name), ...)
+TensorOperator <- function(NAME, ...){
+  TensorTransformer(paste0('skflow.ops.', NAME), ...)
 }
 
 # TensorActivator('logistic_regression') => "skflow.models.logistic_regression(X,y)"
 # Available activators are: linear_regression, logistic_regression
-TensorActivator <- function(name, ...){
-  paste0('skflow.models.', name, '(X,y)')
+TensorActivator <- function(NAME, ...){
+  paste0('skflow.models.', NAME, '(X,y)')
 }
 
 # TensorProcessor(name='VocabularyProcessor',  max_document_length = 10)
 # => "processor = skflow.preprocessing.VocabularyProcessor(max_document_length=10)"
-TensorProcessor <- function(name, ...){
+TensorProcessor <- function(NAME, ...){
   sprintf("processor = skflow.preprocessing.%s(%s)",
-          name, insertPyObjsStr(...))
+          NAME, insertPyObjsStr(...))
 }
 
 # Fit and transform training text OR transform testing text
