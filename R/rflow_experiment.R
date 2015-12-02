@@ -144,7 +144,10 @@ rflowPipeline <- function(eval_metric, test_percent, ...){
   sink("test.py")
   importDeps()
   theDots <- list(...) # execute
-  trainTestSplit(test_percent)
+  # only split when test_percent is not null
+  if(!is.null(test_percent)){
+    trainTestSplit(test_percent)
+  }
   fit()
   predict()
   evalFunc(eval_metric)

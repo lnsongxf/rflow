@@ -11,7 +11,7 @@
 # y_test <- fread('dbpedia_csv/test.csv', select = 1)
 
 # rflowPipeline(eval_metric = 'accuracy_score',
-#               test_percent = 0.25,
+#               test_percent = NULL, # no train/test split is needed
 #               prepareTextData('dbpedia_csv/train.csv', dataType = 'train'),
 #               prepareTextData('dbpedia_csv/test.csv', dataType = 'test'),
 #               TensorProcessor(name='VocabularyProcessor',  max_document_length = 10),
