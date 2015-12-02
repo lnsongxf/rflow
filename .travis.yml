@@ -3,7 +3,7 @@ sudo: true
 language: cpp
 
 os:
-  - linux
+  # - linux
   - osx
 
 addons:

@@ -10,6 +10,7 @@ sudo pip install --upgrade pip
 sudo pip install numpy
 sudo pip install SciPy
 sudo pip install pandas
+sudo pip install csv
 # tensorflow for separate os
 if [ ${TRAVIS_OS_NAME} == "linux" ]; then
   sudo pip install https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.5.0-cp27-none-linux_x86_64.whl

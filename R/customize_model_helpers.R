@@ -32,3 +32,22 @@ TensorOperator <- function(name, ...){
 TensorActivator <- function(name, ...){
   paste0('skflow.models.', name, '(X,y)')
 }
+
+# TensorProcessor(name='VocabularyProcessor',  max_document_length = 10)
+# => "processor = skflow.preprocessing.VocabularyProcessor(max_document_length=10)"
+TensorProcessor <- function(name, ...){
+  sprintf("processor = skflow.preprocessing.%s(%s)",
+          name, insertPyObjsStr(...))
+}
+
+# Fit and transform training text OR transform testing text
+# TensorProcessor.transform('train') => "X_train = np.array(list(processor.fit_transform(X_train)))"
+# TensorProcessor.transform('test') => "X_test = np.array(list(processor.transform(X_test)))"
+TensorProcessor.transform <- function(dataType = 'train'){
+  sprintf('X_%s = np.array(list(processor.%s(X_%s)))',
+          dataType,
+          ifelse(dataType == 'train', 'fit_transform', 'transform'),
+          dataType)
+}
+
+

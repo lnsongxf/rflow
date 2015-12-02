@@ -25,9 +25,11 @@ from sklearn import metrics
 from sklearn.cross_validation import train_test_split
 import skflow
 from numpy import asarray, ndarray
+import numpy as np
 import sys
 from json import dumps
 import tensorflow as tf
+import csv
 ")
 }
 
