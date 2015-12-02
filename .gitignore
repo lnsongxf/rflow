@@ -4,3 +4,4 @@
 test.py
 ./tests/test.py
 testResults.Rout
+dbpedia_csv/*

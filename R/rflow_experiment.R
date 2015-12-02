@@ -1,3 +1,19 @@
+#  Copyright 2015 Yuan Tang
+#  Copyright 2015 Google Inc. All Rights Reserved.
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
+
 require(rPython)
 
 importDeps <- function(){
@@ -152,7 +168,28 @@ from sklearn import datasets
 digits = datasets.load_digits()
 X = digits.images
 y = digits.target
-')
+'
+  )
+}
+
+prepareTextData <- function(fileName,
+                            dataType = 'train',
+                            targetColInd = 0,
+                            predictorColInd = 2,
+                            delimiter = ','){
+  cat(
+    sprintf(
+'
+import csv
+target = []
+data = []
+reader = csv.reader(open(\"%s\"), delimiter=\"%s\")
+for line in reader:
+  target.append(int(line[%d]))
+  data.append(line[%d])
+X_%s, y_%s = data, np.array(target, np.float32)
+' , fileName, delimiter, targetColInd, predictorColInd, dataType, dataType))
+  
 }
 
 # TODOs:
