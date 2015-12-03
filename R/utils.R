@@ -22,39 +22,27 @@ createArgs <- function(names, getFunc=get){
 }
 
 
-# c(1,2,3) => [1,2,3]
+# toPyObjStr(c(1,2,3)) => [1,2,3]
 toPyObjStr <- function(rObj){
-  python.assign('tmp_var', rObj)
-  python.exec(sprintf('
+  pyObjStr <- tryCatch({
+    python.assign('tmp_var', rObj)
+    python.exec(sprintf('
                       from json import dumps
                       with open("tmp_var.txt", "w") as f:
                         f.write(dumps(%s))
                         f.close()', 'tmp_var'))
-  pyObjStr <- suppressWarnings(readLines('tmp_var.txt'))
-  unlink('tmp_var.txt')
+    pyObjStr <- suppressWarnings(readLines('tmp_var.txt'))
+    unlink('tmp_var.txt')
+    pyObjStr
+  }, error = function(e){
+    # deal with cases like CLASS_TYPE, some class type, CONSTANTS, etc (TODO: not working in insertPyObjsStr since '...' gets errored before this function gets called)
+    quotesInds <- as.vector(gregexpr('\'', e$message)[[1]]) # grep single quotes in, e.g. "object 'UNIT' not found"
+    quotesInds[1] <- quotesInds[1] + 1
+    quotesInds[2] <- quotesInds[2] - 1
+    substring(e$message, quotesInds[1], quotesInds[2])
+  })
+  
   return(pyObjStr)
-}
-
-
-# save a Python object to a text file
-savePyObjToFile <- function(pyVarName){
-
-  fileName <- paste0(pyVarName, '.txt')
-  cat(sprintf('
-with open("%s", "w") as f:
-\tif(isinstance(%s, ndarray)):
-\t\tf.write(dumps(ndarray.tolist(%s)))
-\telse:
-\t\tf.write(dumps(%s))
-\tf.close()', fileName, pyVarName, pyVarName, pyVarName))
-}
-
-
-# load a python string from a file to an R object
-loadPyStrToR <- function(pyVarName){
-  fileName <- paste0(pyVarName, '.txt')
-  python.exec(paste0(pyVarName, " = ", readLines(fileName)))
-  return(python.get(pyVarName))
 }
 
 
@@ -62,7 +50,9 @@ loadPyStrToR <- function(pyVarName){
 # insertPyObjsStr(3, c(1,2,3))  => "3, [1, 2, 3]"
 # insertPyObjsStr(shape=c(3,3))  => "shape=[3, 3]"
 insertPyObjsStr <- function(...){
+
   args <- list(...)
+  
   namedArgsInds <- names(args) != ""
   namedArgs <- names(args)[namedArgsInds]
 
@@ -146,5 +136,23 @@ customModelWriter <- function(returnValue, funcInput, ...){
 }
 
 
+# save a Python object to a text file
+savePyObjToFile <- function(pyVarName){
+  
+  fileName <- paste0(pyVarName, '.txt')
+  cat(sprintf('
+              with open("%s", "w") as f:
+              \tif(isinstance(%s, ndarray)):
+              \t\tf.write(dumps(ndarray.tolist(%s)))
+              \telse:
+              \t\tf.write(dumps(%s))
+              \tf.close()', fileName, pyVarName, pyVarName, pyVarName))
+}
 
-# TODO: insertPyObjsStr(time, CLASS_TYPE) # should accept some class type 
+
+# load a python string from a file to an R object
+loadPyStrToR <- function(pyVarName){
+  fileName <- paste0(pyVarName, '.txt')
+  python.exec(paste0(pyVarName, " = ", readLines(fileName)))
+  return(python.get(pyVarName))
+}

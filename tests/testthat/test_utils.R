@@ -1,6 +1,7 @@
 context('Testing util functions')
 
 expect_equal(toPyObjStr(c(2,3)), "[2, 3]")
+expect_equal(toPyObjStr(UNIT), "UNIT")
 
 expect_equal(insertPyObjsStr(3, c(1,2,3)), "3, [1, 2, 3]")
 expect_equal(insertPyObjsStr(shape=c(3,3)), "shape=[3, 3]")

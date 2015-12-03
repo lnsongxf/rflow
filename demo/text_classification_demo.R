@@ -10,6 +10,13 @@
 # X_test <- fread('dbpedia_csv/test.csv', select = 3)
 # y_test <- fread('dbpedia_csv/test.csv', select = 1)
 
+# parameters sepecified in TensorFlowEstimator must be intialized here first
+n_classes <- 15
+steps <- 650
+optimizer <- 'Adam'
+learning_rate <- 0.012
+continue_training <- T
+
 # rflowPipeline(eval_metric = 'accuracy_score',
 #               test_percent = NULL, # no train/test split is needed
 #               prepareTextData('dbpedia_csv/train.csv', dataType = 'train'),
@@ -24,6 +31,6 @@
 #                 TensorOperator('categorical_variable', n_classes=743040, 
 #                                embedding_size=50, name='words'),
 #                 TensorTransformer('tf.reduce_max', reduction_indices = 1)),
-#               TensorFlowEstimator(n_classes = 15, steps=650, optimizer='Adam', # BUG: optimizer not found
-#                                   learning_rate=0.012, continue_training=T)) # TODO: differentiate two n_classes
+#               TensorFlowEstimator(n_classes=n_classes, steps=steps, optimizer=optimizer,
+#                                   learning_rate=learning_rate, continue_training=continue_training))
 #               
