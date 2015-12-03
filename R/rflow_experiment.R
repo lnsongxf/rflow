@@ -29,9 +29,16 @@ import numpy as np
 import sys
 from json import dumps
 import tensorflow as tf
-import csv
 ")
 }
+
+importConstants <- function(){
+cat("
+true = True
+false = False
+")
+}
+
 
 TensorFlowDNNClassifier <- function(hidden_units, n_classes, ...){
   theDots <- list(...)
@@ -143,6 +150,7 @@ rflowPipeline <- function(eval_metric, test_percent, ...){
 
   sink("test.py")
   importDeps()
+  importConstants()
   theDots <- list(...) # execute
   # only split when test_percent is not null
   if(!is.null(test_percent)){

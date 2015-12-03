@@ -22,7 +22,8 @@ createArgs <- function(names, getFunc=get){
 }
 
 
-# toPyObjStr(c(1,2,3)) => [1,2,3]
+# toPyObjStr(c(1,2,3)) => "[1,2,3]"
+# toPyObjStr(UNIT) => "UNIT"
 toPyObjStr <- function(rObj){
   pyObjStr <- tryCatch({
     python.assign('tmp_var', rObj)
