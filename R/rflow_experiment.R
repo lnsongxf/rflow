@@ -39,7 +39,12 @@ false = False
 ")
 }
 
-
+#' @title TensorFlow DNN Classifier
+#' @name TensorFlow DNN Classifier
+#' @description Deep Neural Network classifier
+#' @param hidden_units A vector of the number of hidden units in each layer
+#' @param n_classes The number of classes in the target
+#' @param ... Additional parameters such as keep_prob, a list can be found here: https://github.com/google/skflow/blob/master/skflow/ops/dnn_ops.py
 TensorFlowDNNClassifier <- function(hidden_units, n_classes, ...){
   theDots <- list(...)
   cat(paste0("model = skflow.TensorFlowDNNClassifier(",
@@ -48,6 +53,12 @@ TensorFlowDNNClassifier <- function(hidden_units, n_classes, ...){
          ")\n"))
 }
 
+
+#' @title TensorFlow DNN Regressor
+#' @name TensorFlow DNN Regressor
+#' @description Deep Neural Network regressor
+#' @param hidden_units A vector of the number of hidden units in each layer
+#' @param ... Additional parameters such as keep_prob. A list can be found here: https://github.com/google/skflow/blob/master/skflow/ops/dnn_ops.py
 TensorFlowDNNRegressor <- function(hidden_units, ...){
   theDots <- list(...)
   cat(paste0("model = skflow.TensorFlowDNNRegressor(",
@@ -56,6 +67,13 @@ TensorFlowDNNRegressor <- function(hidden_units, ...){
              ")\n"))
 }
 
+
+#' @title TensorFlow Custom Model Builder
+#' @name TensorFlow Custom Model Builder
+#' @description This function is used when a custom model is written. 
+#' Any custom model will be passed automatically into this function. 
+#' @param n_classes The number of classes for the target variable
+#' @param ... Additional parameters including batch_size, steps, learning_rate, etc. A list can be found here: https://github.com/google/skflow/blob/master/skflow/__init__.py#L29
 TensorFlowEstimator <- function(n_classes, ...){
   theDots <- list(...)
   cat(paste0("model = skflow.TensorFlowEstimator(model_fn=custom_model,",
@@ -64,6 +82,18 @@ TensorFlowEstimator <- function(n_classes, ...){
              ")\n"))
 }
 
+
+#' @title Convolutionary Neural Network Model
+#' @name Convolutionary Neural Network Model
+#' @description This function builds convolutionary neural network model with many tunable parameters
+#' @param n_filters Number of filters
+#' @param filter_shape A vector of integers representing the shape of filters
+#' @param activ_func The activation function, e.g. logistic_regression, linear_regression
+#' @param transform_method The transformation method used, a list of methods can be found on TensorFlow API doc
+#' @param pool_method Pooling method. A list can be found on API doc
+#' @param reduction_indices A vector of reduction indices used in pooling
+#' @param shape The shape parameter passed to tf.reshape. See API doc.
+#' @param ... Additional parameters can be passed, such as strides, see a list here: https://github.com/google/skflow/blob/master/skflow/ops/conv_ops.py
 ConvModel <- function(n_filters = 12, filter_shape = c(3, 3),
                       activ_func='logistic_regression',
                       transform_method = 'tf.expand_dims',
@@ -79,6 +109,10 @@ ConvModel <- function(n_filters = 12, filter_shape = c(3, 3),
     TensorTransformer('tf.reshape', shape))
 }
 
+
+#' @title Preparing predictors
+#' @name Preparing predictors
+#' @param predictors A data.frame/data.table following R's convention 
 preparePredictors <- function(predictors){
   python.assign("X", predictors)
   python.exec('
@@ -102,6 +136,10 @@ preparePredictors <- function(predictors){
   unlink("X_lists.txt")
 }
 
+
+#' @title Preparing target variable
+#' @name Preparing target variable
+#' @param target A data.frame/data.table following R's convention
 prepareTargetVar <- function(target){
   # deal with factor target
   if(is.factor(target)){
@@ -128,6 +166,8 @@ prepareTargetVar <- function(target){
   unlink("y_lists.txt")
 }
 
+
+# internal function used to split training and testing data in the rflow pipeline
 trainTestSplit <- function(test_percent=0.25){
 
   cat(sprintf('
@@ -137,15 +177,23 @@ X, y, test_size=%f, random_state=50)
 
 }
 
+# internal function to fit the model
 fit <- function(){
   cat("model.fit(X_train, y_train)\n")
 }
 
+# internal function to predict on testing set
 predict <- function(save = F){
   cat("predictions = model.predict(X_test)\n")
   if(save){savePyObjToFile('predictions')}
 }
 
+
+#' @title rflow Pipeline
+#' @name rflow Pipeline
+#' @description Main function used to run TensorFlow in pipeline. See demos for usage
+#' @param eval_metric Evaluation metric to be used, e.g. accuracy_score, mean_squared_error. A list can be found here: http://scikit-learn.org/stable/modules/classes.html#sklearn-metrics-metrics
+#' @param ... Additional transformations can be passed here, such as custom model. See demos
 rflowPipeline <- function(eval_metric, test_percent, ...){
 
   sink("test.py")
@@ -185,6 +233,15 @@ y = digits.target
   )
 }
 
+
+#' @title Prepare Text Data
+#' @name Prepare Text Data
+#' @description This function loads/prepares data for text classification
+#' @param fileName Path to the data
+#' @param dataType Whether this is 'train' or 'test' data
+#' @param targetColInd The column index of the target variable (labels)
+#' @param predictorColInd The column index of the predictor (text)
+#' @param delimiter The delimiter used to parse the data
 prepareTextData <- function(fileName,
                             dataType = 'train',
                             targetColInd = 0,
@@ -207,6 +264,7 @@ X_%s, y_%s = data, np.array(target, np.float32)
 
 # TODOs:
 # Refactoring
+# Abstract more methods
 # Enable customized test set without using splitting method
 # Text classification
 # Borrow some interface usage for caret/sklearn

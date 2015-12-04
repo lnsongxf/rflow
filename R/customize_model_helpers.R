@@ -13,16 +13,27 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+#' @name Tensor Transformer
+#' @title Tensor Transformaer
+#' @description This function performs transformation on tensor input and returns tensor input
+#' @param NAME The name of the transoformation method to be used. 
 #' @param ... Additional argument except the tensor input
-#' e.g. TensorTransformer('f', 1, c(1,2,3))  => X = f(X, 1, [1, 2, 3])
-#' Available transformation method are list here: http://www.tensorflow.org/api_docs/python/array_ops.html#tensor-transformations
+#' # e.g. TensorTransformer('f', 1, c(1,2,3))  => X = f(X, 1, [1, 2, 3])
+#' # Available transformation method are list here: http://www.tensorflow.org/api_docs/python/array_ops.html#tensor-transformations
 TensorTransformer <- function(NAME, ...){
   tabFuncExecuteWriter('X', NAME, 'X', ...)
 }
 
-# TensorOperator('conv2d', n_filters = 3, filter_shape = c(1,2))
-# => "\tX = skflow.ops.conv2d(X, n_filters=3, filter_shape=[1, 2])\n"
-# Available operators are: conv2d, dnn
+
+#' @name Tensor Operator
+#' @title Tensor Operater
+#' @description This function performs operations on tensor input, such as conv2d for convolutional layer
+#' and dnn for deep neural network layer
+#' @param NAME The name of the transoformation method to be used. 
+#' @param ... Additional argument except the tensor input
+#' # TensorOperator('conv2d', n_filters = 3, filter_shape = c(1,2))
+#' # => "\tX = skflow.ops.conv2d(X, n_filters=3, filter_shape=[1, 2])\n"
+#' # Available operators are: conv2d, dnn
 TensorOperator <- function(NAME, ...){
   TensorTransformer(paste0('skflow.ops.', NAME), ...)
 }
