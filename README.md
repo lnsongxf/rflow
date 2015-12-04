@@ -15,6 +15,11 @@ This is an experimental and work-in-progress R library for easily using Google T
 ## R Packages
 * rPython
 
+## Installation (via Github after successfully installed the above dependencies)
+```{R}
+devtools::install_github('terrytangyuan/rflow')
+```
+
 Check out demos for available usages. Issues and pull requests are more than welcomed. 
 
 Contact terrytangyuan@gmail.com for questions/suggestions/collaborations.
