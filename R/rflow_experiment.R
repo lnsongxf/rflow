@@ -13,8 +13,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-
-require(rPython)
+#' @import rPython
 
 importDeps <- function(){
 cat("
@@ -269,3 +268,5 @@ X_%s, y_%s = data, np.array(target, np.float32)
 # Text classification
 # Borrow some interface usage for caret/sklearn
 
+#Avoid false positives in R CMD CHECK:
+utils::globalVariables(c("python.exec", "python.get", "python.assign", "<<-", "dtype"))
