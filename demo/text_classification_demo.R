@@ -10,6 +10,7 @@
 # y_train <- fread('dbpedia_csv/train.csv', select = 1)
 # X_test <- fread('dbpedia_csv/test.csv', select = 3)
 # y_test <- fread('dbpedia_csv/test.csv', select = 1)
+# ...
 
 # parameters sepecified in TensorFlowEstimator must be intialized here first
 n_classes <- 15

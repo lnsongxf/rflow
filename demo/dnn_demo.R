@@ -1,7 +1,7 @@
 # Deep Neural Network in R
 
 ## example of using DNN classifier
-# configs for DNN classifier
+# configs for DNN classifier (need to be defined here first)
 predictors <- iris[1:4]
 target <- iris[,5]
 hidden_units <- c(10, 20, 10)
