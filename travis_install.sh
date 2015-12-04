@@ -23,5 +23,5 @@ sudo pip install git+git://github.com/google/skflow.git
 curl -OL http://raw.github.com/craigcitro/r-travis/master/scripts/travis-tool.sh
 chmod 755 ./travis-tool.sh
 ./travis-tool.sh bootstrap
-./travis-tool.sh install_aptget r-cran-testthat r-cran-devtools r-cran-rPython
+./travis-tool.sh install_aptget r-cran-testthat r-cran-devtools r-cran-rPython r-cran-covr
 ./travis-tool.sh install_deps
