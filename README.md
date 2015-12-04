@@ -1,4 +1,5 @@
 [![Travis-CI Build Status](https://travis-ci.org/terrytangyuan/rflow.svg?branch=master)](https://travis-ci.org/terrytangyuan/rflow)
+[![Coverage Status](https://coveralls.io/repos/terrytangyuan/rflw/badge.svg?branch=master)](https://coveralls.io/r/terrytangyuan/rflow?branch=master)
 [![License](http://img.shields.io/:license-mit-blue.svg?style=flat)](http://badges.mit-license.org)
 
 # rflow - Pipeline Interface for TensorFlow in R
