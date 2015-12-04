@@ -18,7 +18,6 @@
 #' @description This function performs transformation on tensor input and returns tensor input
 #' @param NAME The name of the transoformation method to be used. 
 #' @param ... Additional argument except the tensor input
-#' # e.g. TensorTransformer('f', 1, c(1,2,3))  => X = f(X, 1, [1, 2, 3])
 #' # Available transformation method are list here: http://www.tensorflow.org/api_docs/python/array_ops.html#tensor-transformations
 TensorTransformer <- function(NAME, ...){
   tabFuncExecuteWriter('X', NAME, 'X', ...)
@@ -29,31 +28,38 @@ TensorTransformer <- function(NAME, ...){
 #' @title Tensor Operater
 #' @description This function performs operations on tensor input, such as conv2d for convolutional layer
 #' and dnn for deep neural network layer
-#' @param NAME The name of the transoformation method to be used. 
+#' @param NAME The name of the operation method to be used. Available operators are: conv2d, dnn
 #' @param ... Additional argument except the tensor input
-#' # TensorOperator('conv2d', n_filters = 3, filter_shape = c(1,2))
-#' # => "\tX = skflow.ops.conv2d(X, n_filters=3, filter_shape=[1, 2])\n"
-#' # Available operators are: conv2d, dnn
 TensorOperator <- function(NAME, ...){
   TensorTransformer(paste0('skflow.ops.', NAME), ...)
 }
 
-# TensorActivator('logistic_regression') => "skflow.models.logistic_regression(X,y)"
-# Available activators are: linear_regression, logistic_regression
+
+#' @name Tensor Activator
+#' @title Tensor Activator
+#' @description This function performs activation function on the tensor
+#' @param NAME The name of the activation method to be used. Available activators are: linear_regression, logistic_regression, etc
+#' @param ... Additional argument except the tensor input 
 TensorActivator <- function(NAME, ...){
   paste0('skflow.models.', NAME, '(X,y)')
 }
 
-# TensorProcessor(name='VocabularyProcessor',  max_document_length = 10)
-# => "processor = skflow.preprocessing.VocabularyProcessor(max_document_length=10)"
+
+#' @name Tensor Processor
+#' @title Tensor Processor
+#' @description This function performs processing function on the tensor
+#' @param NAME The name of processing function. A list can be found here: https://github.com/google/skflow/blob/master/skflow/preprocessing/text.py
+#' @param ... Additional paramerters passed to processing function
 TensorProcessor <- function(NAME, ...){
   cat(sprintf("processor = skflow.preprocessing.%s(%s)",
           NAME, insertPyObjsStr(...)), "\n")
 }
 
-# Fit and transform training text OR transform testing text
-# TensorProcessor.transform('train') => "X_train = np.array(list(processor.fit_transform(X_train)))"
-# TensorProcessor.transform('test') => "X_test = np.array(list(processor.transform(X_test)))"
+
+#' @name Tensor Processor Transformation
+#' @title Tensor Processor Transformation
+#' @description This function fit and transform training text OR transform testing text
+#' @param dataType Whether this is applying transformation for 'train' or 'test'
 TensorProcessor.transform <- function(dataType = 'train'){
   cat(sprintf('X_%s = np.array(list(processor.%s(X_%s)))',
           dataType,
