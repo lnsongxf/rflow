@@ -9,3 +9,5 @@ if [ "$testFail" != "0" ]; then
   echo "Some unit tests failed. "
   exit 1
 fi
+
+Rscript -e "covr::coveralls()"
