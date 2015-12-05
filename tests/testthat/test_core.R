@@ -34,8 +34,12 @@ ConvModel()
 
 loadMINST()
 
+prepareTextData('testData.csv')
+
 trainTestSplit()
 
 fit()
 
 predict()
+
+evalFunc('accuracy_score')
