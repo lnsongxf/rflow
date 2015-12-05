@@ -25,3 +25,4 @@ chmod 755 ./travis-tool.sh
 ./travis-tool.sh bootstrap
 ./travis-tool.sh install_aptget r-cran-testthat r-cran-devtools r-cran-rPython r-cran-covr
 ./travis-tool.sh install_deps
+Rscript -e 'devtools::install_github("jimhester/covr")'
