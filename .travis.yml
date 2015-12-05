@@ -23,8 +23,8 @@ install:
 script:
   - source run_tests.sh
   
-after-success:
-  - Rscript -e 'library(covr);coveralls()'
+after_success:
+  - Rscript -e 'covr::coveralls()'
 
 cache:
   directories:
